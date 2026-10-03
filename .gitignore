@@ -1,0 +1,25 @@
+# Local datasets and credentials (never commit personal data or API keys)
+.env
+.env.*
+!.env.example
+kaggle.json
+data/
+
+# Python and notebook state
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+.pytest_cache/
+
+# Generated training artifacts and logs
+*.h5
+*.keras
+*.weights.h5
+*.labels.json
+*.pkl
+*.pickle
+outputs/
+runs/
+logs/
