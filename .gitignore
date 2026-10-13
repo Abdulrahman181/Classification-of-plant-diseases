@@ -1,9 +1,14 @@
 data/
+outputs/
+*.png
+*.jpg
+*.jpeg
 *.h5
 *.keras
 *.pkl
 *.pickle
 *.joblib
 __pycache__/
+.pytest_cache/
 .ipynb_checkpoints/
 .venv/
