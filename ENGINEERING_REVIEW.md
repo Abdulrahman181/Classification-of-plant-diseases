@@ -52,6 +52,26 @@ Both notebooks have been rewritten as clean, top-to-bottom workflows with explic
 - Added consistent environment-variable controls for seed, batch size, epoch counts, output location, and optional transfer learning.
 - Added a README covering data layout, execution, validation, evaluation semantics, and the absence of committed data/results.
 
+## Second Senior Review
+
+This follow-up review re-read every tracked file, both notebooks, the complete Git history, and the prior review claims. It also inspected the notebook cells as Python rather than relying only on notebook JSON validity.
+
+### Findings and fixes
+
+1. **Reproducibility controls were incomplete.** NumPy's RNG was not explicitly seeded, and TensorFlow operation determinism was only requested through an environment variable. Both notebooks now seed NumPy and call TensorFlow's deterministic-operation opt-in when available, while retaining compatibility with older TensorFlow builds.
+2. **Small or malformed configuration values failed late or unclearly.** Positive-integer environment settings are now parsed through a shared notebook helper. The first notebook also chooses an integer validation count large enough for stratification when there are many classes.
+3. **The second notebook checked only path overlap.** It now validates every supported image with Pillow before generator construction and rejects byte-identical image content crossing train and validation, in addition to the existing path and class-set checks.
+4. **The EfficientNet workflow was described as optional but always constructed and trained.** It is now explicitly gated by `PLANT_DISEASE_RUN_EFFICIENTNET=1`. When enabled, ImageNet-weight runs freeze the backbone for feature extraction, while random-weight runs keep it trainable rather than training a classifier on fixed random features.
+5. **Repository-wide Ruff exposed notebook style defects and unused imports.** The imports were cleaned up, plotting statements were split, and the intentional pre-TensorFlow environment setup is documented with a narrow Ruff `E402` suppression. `ruff check .` is now clean.
+6. **There were no automated tests and pytest was undocumented.** Added `tests/test_validation.py` and `tests/conftest.py` covering both tracked notebooks and stale output/execution-count rejection, and added `pytest` to `requirements.txt`.
+
+### Remaining risks
+
+- The PlantVillage data, model artifacts, and an independent labelled test set remain intentionally absent. The notebooks therefore cannot be honestly run end-to-end or used to report model quality in this repository.
+- Training remains computationally heavy and depends on the local TensorFlow/OpenCV/scikit-learn/XGBoost installation and compatible hardware. Dependency ranges are minimum-oriented rather than a fully locked environment.
+- Exact byte hashing catches identical files but not visually near-duplicate images, augmented variants, or subject-level leakage. A dataset-specific grouping policy is still required for rigorous evaluation.
+- Validation metrics are holdout/validation metrics, not external generalization or medical-performance evidence.
+
 ## Validation performed
 
 The following checks passed after the changes:
@@ -67,6 +87,8 @@ The following checks passed after the changes:
 - `python3 -m json.tool PDD_Classification.ipynb`
 - `python3 -m json.tool 'plant diseases.ipynb'`
 - `git diff --check`
+- `pytest -q` (4 tests passed)
+- `ruff check .` (clean, including notebook code)
 
 ## Deliberately not claimed
 

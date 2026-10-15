@@ -34,7 +34,7 @@ export PLANTVILLAGE_ROOT=/absolute/path/to/PlantVillage
 jupyter lab
 ```
 
-Open a notebook and run cells from top to bottom. Useful controls are `PLANT_DISEASE_SEED` (default `42`), `PLANT_DISEASE_EPOCHS`, `PLANT_DISEASE_BATCH_SIZE`, and `PLANT_DISEASE_OUTPUT_DIR` (default `outputs/`). The EfficientNet notebook does **not** download ImageNet weights by default; set `PLANT_DISEASE_IMAGENET_WEIGHTS=1` only when network access and the corresponding weights are available.
+Open a notebook and run cells from top to bottom. Useful controls are `PLANT_DISEASE_SEED` (default `42`), `PLANT_DISEASE_EPOCHS`, `PLANT_DISEASE_BATCH_SIZE`, `PLANT_DISEASE_MAX_IMAGES_PER_CLASS` (first notebook, default `100`), and `PLANT_DISEASE_OUTPUT_DIR` (default `outputs/`). Integer controls reject invalid or non-positive values. The EfficientNet path is skipped by default; set `PLANT_DISEASE_RUN_EFFICIENTNET=1` to enable it. It does **not** download ImageNet weights by default; set `PLANT_DISEASE_IMAGENET_WEIGHTS=1` only when network access and the corresponding weights are available.
 
 ## Static validation
 
@@ -42,9 +42,10 @@ Run this lightweight check without loading TensorFlow or training a model:
 
 ```bash
 python validate_notebooks.py
+python -m pytest -q
 ```
 
-It parses every code cell with Python AST, rejects stale notebook outputs and execution counts, checks for common non-portable paths, and runs Ruff `E9/F821` when Ruff is installed.
+The first command parses every code cell with Python AST, rejects stale notebook outputs and execution counts, checks for common non-portable paths, and runs Ruff `E9/F821` when Ruff is installed. The second command tests the validator itself. Both notebooks also validate image readability and reject byte-identical files crossing the train/validation boundary; these checks do not replace an independent test set.
 
 ## Evaluation and limitations
 

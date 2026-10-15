@@ -16,4 +16,6 @@ xgboost>=2.0
 
 # Notebook and repository validation
 jupyterlab>=4.0
+ipykernel>=6.25
 ruff>=0.6
+pytest>=8.0
